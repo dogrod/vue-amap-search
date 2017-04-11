@@ -1,6 +1,7 @@
 <template>
   <div class="hello">
-    <img src="../../assets/images/logo.png">
+    <router-link to="/map-selector">地址选择</router-link>
+    <!-- <img src="../../assets/images/logo.png">
     <h1>{{ message }}</h1>
     <h1>{{ computed(message) }}</h1>
     <h2>Essential Links</h2>
@@ -18,7 +19,7 @@
       <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
       <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
       <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul>
+    </ul> -->
   </div>
 </template>
 

@@ -14,7 +14,7 @@ export default {
   .layout {
     width: 100vw;
     height: 100vh;
-    margin-top: 60px;
+    /*margin-top: 60px;*/
 
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
