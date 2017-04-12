@@ -1,6 +1,8 @@
 # Vue Amap Search
 > 使用Vue-amap组件库完成的高德地图选址插件
 
+**目前仅适配iPhone6**
+
 ## TODO
 
 -  [ ] 拖拽时不间断移动centerMarker的位置（目前仅能做到在moveend时移动）
@@ -11,8 +13,11 @@
 
 ## 已知问题
 
--  [ ] 当distance为NaN时视口宽度会发生变化
+-  [x] 当distance为NaN时视口宽度会发生变化
 -  [ ] 搜索会偶发性触发搜索面板消失，并且无法恢复
+
+> 如有问题请发 issue 或发邮件至 <rodrickjue@hotmail.com>
+> If you have any question, please [Contact me](rodrickjue@hotmail.com)
 
 ## Build Setup
 

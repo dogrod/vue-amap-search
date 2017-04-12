@@ -152,6 +152,8 @@
     position: fixed;
     top: 0;
     left: 0;
+
+    width: 100vw;
   }
   .map-container {
     height: 400px;
