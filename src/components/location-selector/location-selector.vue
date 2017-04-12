@@ -1,6 +1,6 @@
 <template lang="html">
-  <div class="">
-    高德地图位置选择组件
+  <div class="location-selector" v-show="visible">
+    <search :placesearch="placesearch" :city="city" @gotResult="handleGotResult"></search>
     <div class="map-container">
       <el-amap :vid="'amap-vue'"
                :center="center"
@@ -12,27 +12,32 @@
         <el-amap-marker v-for="marker in markers" :position="marker"></el-amap-marker>
       </el-amap>
     </div>
-    <ul v-show="searchResults.length">
-      <li v-for="result in searchResults">
-        <div>
-          名称：{{ result.name }}
-        </div>
-        <div>
-          地址：{{ result.address }}
-        </div>
-        <div>
-          距离：{{ result.distance }}米
-        </div>
-      </li>
-    </ul>
-    <div v-show="!searchResults.length">暂无数据</div>
+    <result-list :searchResult="searchResult"
+                 :geocoder="geocoder"
+                 :clientHeight="client.height"
+                 :clientWidth="client.width"
+                 @selected="handleSelected"
+                 ></result-list>
   </div>
 </template>
 
 <script>
   import { AMapManager } from 'vue-amap'
+  import search from './search.vue'
+  import resultList from './resultList.vue'
+
   let amapManager = new AMapManager()
   export default {
+    props: {
+      value: {
+        type: Boolean,
+        default: false
+      }
+    },
+    components: {
+      search,
+      resultList
+    },
     data() {
       let self = this
       return {
@@ -40,7 +45,6 @@
         zoom: 15,
         center: [120.21440818650825, 30.253264929440956],
         markers: [
-          [120.21440818650825, 30.253264929440956]
         ],
         centerMarker: [],
         amapManager: amapManager,
@@ -60,58 +64,97 @@
           }
         },
         plugin: ['ToolBar', {
-          pName: 'PlaceSearch',
+          pName: 'PlaceSearch',  // poi搜索插件
           events: {
-            init(o) {
-              self.placesearch = o
+            init(instance) {
+              self.placesearch = instance
             }
           }
         }, {
-          pName: 'Geolocation',
+          pName: 'Geolocation', // 定位插件
           events: {
             init(instance) {
               instance.getCurrentPosition((status, result) => {
-                console.log(result)
+                self.city = result.addressComponent.city
                 self.center = [result.position.lng, result.position.lat]
                 self.searchPoint([result.position.lng, result.position.lat])
               })
             }
           }
+        }, {
+          pName: 'Geocoder', // 行政区域搜索插件
+          events: {
+            init(instance) {
+              self.geocoder = instance
+            }
+          }
         }],
-        placesearch: '',
-        searchResults: []
+        searchResult: [],
+        placesearch: {}, // 插件实例
+        districtsearch: {}, // 插件实例
+        geocoder: {}, // 插件实例
+        city: '',
+        client: {
+          height: 0,
+          width: 0
+        },
+        visible: this.value
       }
     },
     methods: {
+      /**
+       * 搜索组件获得搜索数据事件
+       * @param {Object} result 高德地图返回的搜索结果
+       */
+      handleGotResult(result) {
+        this.updatesearchResult(result.poiList.pois)
+      },
+      handleSelected(address) {
+        this.$emit('input', false)
+        this.$emit('selected', address)
+      },
+      /**
+       * 搜索某一点附近1000米内的poi
+       * @param {Array} point 需要搜索的位置，数据结构为 [lng,lat]
+       */
       searchPoint(point) {
-        // if (typeof (this.placesearch) === 'object') {
-        this.placesearch.searchNearBy('小区,商场', point, 1000, (status, result) => {
-          console.log(result)
-          this.searchResults = []
+        this.placesearch.searchNearBy('', point, 1000, (status, result) => {
           if (result.poiList) {
-            this.searchResults = result.poiList.pois
+            this.updatesearchResult(result.poiList.pois)
           }
         })
-        console.log('result')
-        // }
+      },
+      /**
+       * 更新搜索结果列表方法
+       * @param {Array} point 经过筛选的搜索结果
+       */
+      updatesearchResult(result) {
+        this.searchResult = []
+        if (result && result.length) {
+          this.searchResult = result
+        }
+      },
+    },
+    watch: {
+      value(value) {
+        this.visible = value
       }
+    },
+    mounted() {
+      this.client.height = window.innerHeight
+      this.client.width = window.innerWidth
     }
   }
 </script>
 
 <style lang="stylus" scoped>
-  ul {
-      list-style: none;
-
-      font-size: 12px;
-      -webkit-padding-start: 0;
-
-      >li:not(:first-child) {
-        border-top: 1px solid #aaa;
-      }
+  .location-selector {
+    position: fixed;
+    top: 0;
+    left: 0;
   }
-
   .map-container {
     height: 400px;
+
   }
 </style>

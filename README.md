@@ -1,5 +1,18 @@
 # Vue Amap Search
-> Vue.js 2 family bucket used Project Template.
+> 使用Vue-amap组件库完成的高德地图选址插件
+
+## TODO
+
+-  [ ] 拖拽时不间断移动centerMarker的位置（目前仅能做到在moveend时移动）
+-  [ ] 搜索联想/补全功能
+-  [ ] 界面优化及设备适配
+-  [ ] 返回返回数据的自由组合
+-  [ ] etc.
+
+## 已知问题
+
+-  [ ] 当distance为NaN时视口宽度会发生变化
+-  [ ] 搜索会偶发性触发搜索面板消失，并且无法恢复
 
 ## Build Setup
 
