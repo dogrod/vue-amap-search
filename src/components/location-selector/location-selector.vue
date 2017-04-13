@@ -1,6 +1,10 @@
 <template lang="html">
   <div class="location-selector" v-show="visible">
-    <search :placesearch="placesearch" :city="city" @gotResult="handleGotResult"></search>
+    <search :placesearch="placesearch"
+            :autocomplete="autocomplete"
+            :city="city"
+            @gotResult="handleGotResult"
+            @selected="handleSelectedAutocomplete"></search>
     <div class="map-container">
       <el-amap :vid="'amap-vue'"
                :center="center"
@@ -9,7 +13,9 @@
                :plugin="plugin"
                :events="events">
         <el-amap-marker :position="centerMarker" v-if="centerMarker.length"></el-amap-marker>
-        <el-amap-marker v-for="marker in markers" :position="marker"></el-amap-marker>
+        <el-amap-marker v-for="marker in markers"
+                        :key="maker"
+                        :position="marker"></el-amap-marker>
       </el-amap>
     </div>
     <result-list :searchResult="searchResult"
@@ -24,7 +30,7 @@
 <script>
   import { AMapManager } from 'vue-amap'
   import search from './search.vue'
-  import resultList from './resultList.vue'
+  import resultList from './result-list.vue'
 
   let amapManager = new AMapManager()
   export default {
@@ -82,17 +88,25 @@
             }
           }
         }, {
-          pName: 'Geocoder', // 行政区域搜索插件
+          pName: 'Geocoder', // 地点详情检索插件
           events: {
             init(instance) {
               self.geocoder = instance
             }
           }
+        }, {
+          pName: 'Autocomplete', // 搜索关键词自动补全插件
+          events: {
+            init(instance) {
+              self.autocomplete = instance
+              self.autocomplete.citylimit = true
+            }
+          }
         }],
         searchResult: [],
         placesearch: {}, // 插件实例
-        districtsearch: {}, // 插件实例
         geocoder: {}, // 插件实例
+        autocomplete: {},
         city: '',
         client: {
           height: 0,
@@ -100,6 +114,11 @@
         },
         visible: this.value
       }
+    },
+    computed: {
+      // resultMarkers() {
+      //   let
+      // }
     },
     methods: {
       /**
@@ -109,6 +128,13 @@
       handleGotResult(result) {
         this.updatesearchResult(result.poiList.pois)
       },
+      handleSelectedAutocomplete(location) {
+        this.center = location
+      },
+      /**
+       * 列表被点击后组装数据触发，同时触发自身的selected事件
+       * @param {Object} address 由子组件传入的地址对象
+       */
       handleSelected(address) {
         this.$emit('input', false)
         this.$emit('selected', address)
@@ -126,7 +152,7 @@
       },
       /**
        * 更新搜索结果列表方法
-       * @param {Array} point 经过筛选的搜索结果
+       * @param {Array} result 经过筛选的搜索结果
        */
       updatesearchResult(result) {
         this.searchResult = []
