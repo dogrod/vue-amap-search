@@ -35,13 +35,13 @@
         }
       },
       addressWidth() {
-        return (this.clientWidth - 130) + 'px'
+        return (this.searchResult.length) ? ((this.clientWidth - 120) + 'px') : ((this.clientWidth - 40) + 'px')
       }
     },
     methods: {
       /**
        * 点击事件，组装数据，emitselected事件
-       * @param {Object} location 位置信息
+       * @param {Object} lcoation 位置信息
        */
       handleClick(location) {
         this.getAddress(location).then((address) => {
@@ -50,22 +50,18 @@
       },
       /**
        * 获取行政区域，组成详细地址
-       * @param {Object} location 位置信息
-       * @return {Object} 返回获得详细信息的方法
+       * @param {Object} lcoation 位置信息
        */
       getAddress(location) {
         return new Promise((resolve) => {
-          this.geocoder.getAddress(
-            [location.location.lng, location.location.lat],
-            (status, result) => {
-              let addressDetail = result.regeocode.addressComponent
-              let obj = {
-                district: `${addressDetail.province} / ${addressDetail.city} / ${addressDetail.district}`,
-                detail: location.address
-              }
-              resolve(obj)
+          this.geocoder.getAddress([location.location.lng, location.location.lat], (status, result) => {
+            let addressDetail = result.regeocode.addressComponent
+            let obj = {
+              district: `${addressDetail.province} / ${addressDetail.city} / ${addressDetail.district}`,
+              detail: location.address
             }
-          )
+            resolve(obj)
+          })
         })
       }
     }
@@ -93,7 +89,7 @@
       }
 
       .result-distance {
-        width: 90px;
+        width: 80px;
       }
     }
   }
