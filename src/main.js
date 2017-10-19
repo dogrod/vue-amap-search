@@ -2,6 +2,13 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+import VueAMap from 'vue-amap'
+
+Vue.use(VueAMap)
+VueAMap.initAMapApiLoader({
+  key: '787c512840646158bc9317d1f3f62c8d',
+  plugin: ['ToolBar', 'Geolocation', 'PlaceSearch', 'Geocoder', 'Autocomplete']
+})
 
 Vue.config.productionTip = false
 
