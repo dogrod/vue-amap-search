@@ -4,6 +4,8 @@ import Vue from 'vue'
 import App from './App'
 import VueAMap from 'vue-amap'
 
+import './assets/styles/base.styl'
+
 Vue.use(VueAMap)
 VueAMap.initAMapApiLoader({
   key: '787c512840646158bc9317d1f3f62c8d',
