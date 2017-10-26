@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import VueAMap from 'vue-amap'
 
+import './utils/responsive'
 import './assets/styles/base.styl'
 
 Vue.use(VueAMap)
