@@ -69,6 +69,8 @@ export default {
      */
     handleLocationSelected(result) {
       this.$emit('on-selected', result)
+
+      this.clearSearchField()
     },
     /**
      * search by keyword
@@ -101,15 +103,6 @@ export default {
       if (!results.length) {
         this.results.push({ address: '没有相关的搜索信息' })
       }
-    },
-    /**
-     * search finished function
-     * @param {Object} result - result object to emit
-     */
-    searchFinished(result) {
-      this.$emit('on-search', result)
-
-      this.clearSearchField()
     },
     /**
      * clearc search field function

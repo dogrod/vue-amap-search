@@ -2,7 +2,7 @@
 <ul class="result-list">
   <li
     v-for="(result, index) in data"
-    v-if="result.id"
+    v-if="result.location && result.location.lng"
     :key="result.id"
     @click="handleClickResult(result)"
   >

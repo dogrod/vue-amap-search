@@ -10,7 +10,7 @@ import './assets/styles/base.styl'
 Vue.use(VueAMap)
 VueAMap.initAMapApiLoader({
   key: '787c512840646158bc9317d1f3f62c8d',
-  plugin: ['ToolBar', 'Geolocation', 'PlaceSearch', 'Geocoder', 'Autocomplete'],
+  plugin: ['ToolBar', 'Geolocation', 'PlaceSearch', 'Geocoder', 'Autocomplete', 'DistrictSearch'],
   uiVersion: '1.0',
 })
 

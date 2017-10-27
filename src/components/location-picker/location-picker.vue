@@ -5,7 +5,7 @@
       :placeholder="placeholder"
       :city-limited="currentCity"
       :plugin="plugins.autocomplete"
-      @on-search="handleSearch"
+      @on-selected="handleLocationSelected"
     ></search-location>
   </div>
   <div class="amap-ui-compoent-wrapper">
@@ -25,6 +25,7 @@
   <div class="location-picker__results">
     <result-list
       :data="result.pois"
+      @on-selected="handleLocationSelected"
     ></result-list>
   </div>
 </div>
@@ -108,7 +109,21 @@ export default {
               this.plugins.autocomplete.citylimit = true
             },
           },
-        },],
+      }, {
+          pName: 'Geocoder', // 地点详情检索插件
+          events: {
+            init: (instance) => {
+              this.plugins.geocoder = instance
+            }
+          }
+      }, {
+        pName: 'DistrictSearch', // 行政区域搜索插件
+        events: {
+          init: (instance) => {
+            this.plugins.districtSearch = instance
+          }
+        },
+      }],
       plugins: {
         placesearch: {}, // 附近poi搜索实例
         geocoder: {}, // 地址查询实例
@@ -124,11 +139,32 @@ export default {
   },
   methods: {
     /**
-     * search event
-     * @param {String} searchField - search field
+     * location selected event handler
+     * @param {Object} locationObject - location object
      */
-    handleSearch(searchField) {
-      console.log(searchField)
+    handleLocationSelected(locationObject) {
+      if (!locationObject.location  && !locationObject.location.lng) return
+
+      const formattedAddressObject = {}
+      formattedAddressObject.location = locationObject.location
+
+      this.plugins.geocoder.getAddress(
+        [locationObject.location.lng, locationObject.location.lat],
+        (status, result) => {
+          const addressComponent = result.regeocode.addressComponent
+          const locationDetail = {
+            id: locationObject.id,
+            name: locationObject.name,
+            address: locationObject.address,
+          }
+
+          const addressDetail = Object.assign({}, addressComponent, locationDetail)
+
+          formattedAddressObject.addressDetail = addressDetail
+          
+          this.emitSelected(formattedAddressObject)
+        }
+      )
     },
     /**
      * get address by center point
@@ -147,7 +183,6 @@ export default {
       self.isSearching = true
 
       self.plugins.placesearch.searchNearBy('', point, 1000, (status, result) => {
-        console.log(status, result)
         if (
           result.info === 'OK'
           && result.poiList.count > 0
@@ -180,6 +215,15 @@ export default {
      */
     setCurrentCity(city) {
       this.currentCity = city
+    },
+    /**
+     * emit on-selected event when location selected
+     * @param {Object} result - location object
+     */
+    emitSelected(result) {
+      console.log(result)
+
+      this.$emit('on-selected', result)
     },
   },
 }
