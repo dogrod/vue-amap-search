@@ -211,8 +211,6 @@ export default {
      * @param {Object} result - location object
      */
     emitSelected(result) {
-      console.log(result)
-
       this.$emit('on-selected', result)
     },
   },

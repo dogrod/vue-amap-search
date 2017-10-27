@@ -1,9 +1,12 @@
 <template lang="pug">
 .index
   h2 AMap Location Picker Component with Vue.js
+  div current location: {{ locationString }}
   button(@click="handleClickSelectLocation") Select Location
   picker-wrapper(v-model="showLocationPicker")
-    location-picker
+    location-picker(
+      @on-selected="handleLocationSelected"
+    )
 </template>
 
 <script>
@@ -19,6 +22,7 @@ export default {
   data() {
     return {
       showLocationPicker: false,
+      locationString: '',
     }
   },
   methods: {
@@ -29,6 +33,15 @@ export default {
       if (this.showLocationPicker) return
 
       this.setShowLocationPicker(true)
+    },
+    /**
+     * location selected event
+     * @param {Object} location - location object
+     */
+    handleLocationSelected(location) {
+      this.locationString = JSON.stringify(location)
+
+      this.setShowLocationPicker(false)
     },
     /**
      * set show location Picker
