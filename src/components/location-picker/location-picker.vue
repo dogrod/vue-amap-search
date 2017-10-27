@@ -59,6 +59,7 @@ export default {
     },
     defaultLocation: {
       type: Array,
+      default: () => [],
     },
     onlyView: {
       type: Boolean,
@@ -239,7 +240,7 @@ export default {
             })
           },
         },
-      },)
+      })
     }
   },
 }

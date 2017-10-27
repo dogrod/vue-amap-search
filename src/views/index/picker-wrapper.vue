@@ -1,7 +1,7 @@
 <template lang="pug">
 .picker-wrapper(v-show="isVisible")
   .picker__header(@click="handleClickBack")
-    | Tap to background
+    | Tap to back
   .picker__content
     slot
 </template>
