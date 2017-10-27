@@ -1,6 +1,6 @@
 <template>
 <div class="location-picker">
-  <div class="location-picker__search">
+  <div class="location-picker__search" v-if="!onlyView">
     <search-location
       :placeholder="placeholder"
       :city-limited="currentCity"
@@ -18,11 +18,16 @@
       :events="uiComponentModel.events"
     >
       <el-amap-marker
+        v-if="!onlyView"
         :position="uiComponentModel.center"
+      ></el-amap-marker>
+      <el-amap-marker
+        v-else
+        :position="defaultLocation"
       ></el-amap-marker>
     </el-amap>
   </div>
-  <div class="location-picker__results">
+  <div class="location-picker__results" v-if="!onlyView">
     <result-list
       :data="result.pois"
       @on-selected="handleLocationSelected"
@@ -52,14 +57,20 @@ export default {
       type: String,
       default: 'Please input location info',
     },
+    defaultLocation: {
+      type: Array,
+    },
+    onlyView: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       aMapManager,
       uiComponentModel: {
-        center: defaultCenter.slice(),
+        center: this.defaultLocation.length ? this.defaultLocation : defaultCenter,
         zoom: 15,
-        centerMarker: defaultCenter.slice(),
         events: {
           mapmove: () => {
             const mapCenter = this.aMapManager.getMap().getCenter()
@@ -77,28 +88,6 @@ export default {
         events: {
           init: (instance) => {
             this.plugins.placesearch = instance
-          },
-        },
-      }, {
-        pName: 'Geolocation', // 定位插件
-        events: {
-          init: (instance) => {
-            instance.getCurrentPosition((status, result) => {
-              // 设置定位按钮不可见
-              window.document.getElementsByClassName('amap-geolocation-con')[0].style.display = 'none'
-
-              if (
-                result
-                && result.position
-              ) {
-                const centerPoint = [result.position.lng, result.position.lat]
-                const currentCity = result.addressComponent.city
-
-                this.setCurrentCity(currentCity)
-                this.setCenterPoint(centerPoint)
-              }
-              this.getCenterAddress()
-            })
           },
         },
       }, {
@@ -225,6 +214,33 @@ export default {
 
       this.$emit('on-selected', result)
     },
+  },
+  mounted() {
+    if (!this.defaultLocation.length) {
+      this.plugin.push({
+        pName: 'Geolocation', // 定位插件
+        events: {
+          init: (instance) => {
+            instance.getCurrentPosition((status, result) => {
+              // 设置定位按钮不可见
+              window.document.getElementsByClassName('amap-geolocation-con')[0].style.display = 'none'
+
+              if (
+                result
+                && result.position
+              ) {
+                const centerPoint = [result.position.lng, result.position.lat]
+                const currentCity = result.addressComponent.city
+
+                this.setCurrentCity(currentCity)
+                this.setCenterPoint(centerPoint)
+              }
+              this.getCenterAddress()
+            })
+          },
+        },
+      },)
+    }
   },
 }
 </script>
