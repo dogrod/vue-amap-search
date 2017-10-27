@@ -3,7 +3,8 @@
   <div class="location-picker__search">
     <search-location
       :placeholder="placeholder"
-      :plgin="plugins.autocomplete"
+      :city-limited="currentCity"
+      :plugin="plugins.autocomplete"
       @on-search="handleSearch"
     ></search-location>
   </div>
@@ -90,7 +91,9 @@ export default {
                 && result.position
               ) {
                 const centerPoint = [result.position.lng, result.position.lat]
+                const currentCity = result.addressComponent.city
 
+                this.setCurrentCity(currentCity)
                 this.setCenterPoint(centerPoint)
               }
               this.getCenterAddress()
@@ -115,7 +118,8 @@ export default {
       isSearching: false,
       result: {
         pois: [],
-      }
+      },
+      currentCity: '',
     }
   },
   methods: {
@@ -169,6 +173,13 @@ export default {
       if (this.isSearching === value) return
 
       this.isSearching = value
+    },
+    /**
+     * set current city
+     * @param {String} city - city name
+     */
+    setCurrentCity(city) {
+      this.currentCity = city
     },
   },
 }

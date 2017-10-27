@@ -2,13 +2,25 @@
 <ul class="result-list">
   <li
     v-for="(result, index) in data"
+    v-if="result.id"
     :key="result.id"
     @click="handleClickResult(result)"
   >
     <div class="result__name">
-      <span v-if="index === 0" class="current-location">[当前位置]</span>{{ result.name }}
+      <span
+        class="current-location"
+        v-if="index === 0 && showCurrentHint"
+      >[当前位置]</span>
+      {{ result.name }}
     </div>
-    <div class="result__address">{{ result.address }}</div>
+    <div class="result__address">
+      <span>
+        {{ result.district }}
+      </span>
+      <span v-show="typeof result.address === 'string'">
+        {{ result.address }}
+      </span>
+    </div>
   </li>
 </ul>
 </template>
@@ -21,6 +33,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    showCurrentHint: {
+      type: Boolean,
+      default: true,
+    },
   },
   methods: {
     /**
@@ -28,7 +44,14 @@ export default {
      * @param {Object} result - result item in result list
      */
     handleClickResult(result) {
-      console.log(result)
+      this.emitSelectedEvent(result)
+    },
+    /**
+     * emit on-selected event
+     * @param {Object} result - result object
+     */
+    emitSelectedEvent(result) {
+      this.$emit('on-selected', result)
     },
   },
 }
