@@ -216,7 +216,7 @@ export default {
     },
   },
   mounted() {
-    if (!this.defaultLocation.length) {
+    if (!this.onlyView) {
       this.plugin.push({
         pName: 'Geolocation', // 定位插件
         events: {
